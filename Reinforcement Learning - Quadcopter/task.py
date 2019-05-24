@@ -28,7 +28,18 @@ class Task():
 
     def get_reward(self):
         """Uses current pose of sim to return reward."""
-        reward = 2*np.exp(-(self.sim.pose[2]-self.target_pos[2])**2/(2*12*12))-1
+        #reward = 2*np.exp(-(self.sim.pose[2]-self.target_pos[2])**2/(2*12*12))-1 - NORMAL CAPENGA
+        mu = np.log(40)
+        s = np.sqrt(mu/np.log(self.target_pos[2]))
+        
+        if self.sim.pose[2]>0:
+            reward = 2*np.exp(mu-s*s/2)*np.exp(-(np.log(self.sim.pose[2])-mu)**2/(2*s*s))/self.sim.pose[2]-1
+        else:
+            reward = -1
+            
+        if self.done is True and self.sim.runtime > self.sim.time: #Crashed
+            reward = -10
+            
         
         return reward
 
@@ -38,6 +49,7 @@ class Task():
         pose_all = []
         for _ in range(self.action_repeat):
             done = self.sim.next_timestep(rotor_speeds) # update the sim pose and velocities
+            self.done = done #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             reward += self.get_reward() 
             pose_all.append(self.sim.pose)
         next_state = np.concatenate(pose_all)
