@@ -19,41 +19,47 @@ class Task():
         self.action_repeat = 3
 
         self.state_size = self.action_repeat * 6
-        self.action_low = 0
-        self.action_high = 900
+        self.action_low = 100
+        self.action_high = 800
         self.action_size = 4
 
         # Goal
         self.target_pos = target_pos if target_pos is not None else np.array([0., 0., 10.]) 
 
-    def get_reward(self):
+    def get_reward(self,done):
         """Uses current pose of sim to return reward."""
-        #reward = 2*np.exp(-(self.sim.pose[2]-self.target_pos[2])**2/(2*12*12))-1 - NORMAL CAPENGA
-        mu = np.log(40)
-        s = np.sqrt(mu/np.log(self.target_pos[2]))
-        
-        if self.sim.pose[2]>0:
-            reward = 2*np.exp(mu-s*s/2)*np.exp(-(np.log(self.sim.pose[2])-mu)**2/(2*s*s))/self.sim.pose[2]-1
+
+        r0 = self.target_pos[2]
+        r = self.sim.pose[2]
+        rdot = self.sim.find_body_velocity()[2]
+
+        if r>0:
+            reward = (1-np.tanh(0.1*np.abs(r-r0)))*0.4
+            reward+=(1-np.tanh(0.0625*np.abs(rdot)))*0.4
+            reward+=(1-np.tanh(0.1*np.abs(self.sim.pose[3:].sum())))*0.1
+            reward+=(1-np.tanh(0.025*np.abs(self.sim.angular_v.sum())))*0.1
+
+            if done & (r<2.5*r0):
+                reward = 50
+
         else:
-            reward = -1
-            
-        if self.done is True and self.sim.runtime > self.sim.time: #Crashed
-            reward = -10
-            
-        
+            reward = -30     
+         
         return reward
+        
 
     def step(self, rotor_speeds):
         """Uses action to obtain next state, reward, done."""
         reward = 0
         pose_all = []
         for _ in range(self.action_repeat):
+            self.body_velocity_bstep = self.sim.find_body_velocity()
             done = self.sim.next_timestep(rotor_speeds) # update the sim pose and velocities
-            self.done = done #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            reward += self.get_reward() 
+            reward += self.get_reward(done) 
             pose_all.append(self.sim.pose)
         next_state = np.concatenate(pose_all)
-        return next_state, reward, done, rotor_speeds
+        
+        return next_state, reward, done
 
     def reset(self):
         """Reset the sim to start a new episode."""
