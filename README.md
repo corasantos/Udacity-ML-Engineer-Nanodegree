@@ -6,12 +6,13 @@ This repository keeps all submitted projects to [Udacity's Machine Learning Engi
 
 1. **Supervised Learning - Finding Donors**
 
-   _STATUS_ Already submitted. Must perform the requested changes.
+   _STATUS_ Approved.
 
 2. **Unsupervised Learning - Customer Segments**
 
-   _STATUS_ Must finish analysis for submission.
+   _STATUS_ Approved.
 
 3. **Reinforcement Learning - Quadcopter**
 
-   _STATUS_ Must finish developing for analysis and submission.
+   _STATUS_ Must finish answers for submission.
+
