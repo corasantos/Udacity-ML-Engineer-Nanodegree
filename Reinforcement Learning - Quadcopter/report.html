@@ -13751,7 +13751,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#results = pd.read_csv(&#39;z-zdot_angular.csv&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
 <span class="n">episodeend</span> <span class="o">=</span> <span class="n">results</span><span class="p">[[</span><span class="s1">&#39;episode&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;episode&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
 <span class="n">episodeend</span> <span class="o">=</span> <span class="n">episodeend</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
